@@ -27,6 +27,7 @@ function generatePlans() {
     domainOrderArr.forEach(gradeLevel => {
         let gradeLevelArr = [];
         let gradeCode = gradeLevel[0];
+        if (gradeCode === 'K') {gradeCode = '0'}
         for (let i = 1; i < gradeLevel.length; i++) {
             gradeLevelArr.push(gradeLevel[i]);
         }
@@ -43,6 +44,7 @@ function generatePlans() {
         let studentObj = {};
 
         for (let j=0; j< student.length; j++) {
+            if (student[j] === 'K') {student[j] = '0'}
             studentObj[studentTestsArr[0][j]] = student[j];
         }
 
@@ -50,21 +52,18 @@ function generatePlans() {
     };
 
     // access each key in the Domain Order and Student objects, in order by grade level
-    ['K', '1', '2', '3', '4', '5', '6'].forEach(gradeLevel => {
-        for (let i = 0; i<domainOrderObj[gradeLevel].length; i++) {
-            let label = domainOrderObj[gradeLevel][i];
+    Object.keys(domainOrderObj).forEach(gradeLevel => {
+        let gradeLevelArr = domainOrderObj[gradeLevel];
+        for (let i = 0; i < gradeLevelArr.length; i++) {
+            let label = gradeLevelArr[i];
             studentObjArray.forEach((studentObj, index) => {
-
-                // translate 'K's to '0's to allow comparison against numbers
                 let gradeLevelString = gradeLevel;
-                if (studentObj[label] === 'K') {studentObj[label] = '0'}
-                if (gradeLevel === 'K') {gradeLevelString = '0'}
 
                 // if a student's performance level is at or below this grade level in this
                 // subject, add the plan code to their index in the student plans array
-                if (studentObj[label] <= gradeLevelString && studentPlansArr[index].length < 6) {
-                    if (gradeLevel === '0') {gradeLevel = 'K'}
-                    studentPlansArr[index].push(gradeLevel + "." + label);
+                if (studentObj[label] <= gradeLevel && studentPlansArr[index].length < 6) {
+                    if (gradeLevel === '0') {gradeLevelString = 'K'}
+                    studentPlansArr[index].push(gradeLevelString + "." + label);
                     studentObj[label] = (Number(studentObj[label]) + 1).toString()
                 }
             })
